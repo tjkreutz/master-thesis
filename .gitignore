@@ -1,6 +1,5 @@
 # pycharm project files
 .idea/
-data/*
 
 # Annoying Mac files
 .DS_store
