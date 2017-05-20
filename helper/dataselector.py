@@ -1,14 +1,11 @@
 import os
+import math
 from shutil import copyfile
 from xml.etree import ElementTree
 
-BASEDIR = 'data/opendatauitspraken/'
-YEARS = ['2012, 2013, 2014, 2015, 2016, 2017']
-DATADIRS = [BASEDIR + year for year in YEARS]
-NAME_QUERY = 'RB'
-NAME_INDEX = 2
-STRING_QUERY = 'http://psi.rechtspraak.nl/rechtsgebied#strafrecht'
-OUTPUTFILE = BASEDIR + 'strafrecht/'
+BASEDIR = ''
+DATADIRS = [BASEDIR + '']
+OUTPUTFILE = BASEDIR + ''
 
 
 class DataSelector:
@@ -66,12 +63,23 @@ class DataSelector:
     def get_file_paths(self):
         return self.file_paths
 
+    def select_random(self, amount):
+        result = []
+        original_file_paths = self.get_file_paths()
+        original_amount = len(original_file_paths)
+        if amount > original_amount:
+            return
+        intervals = math.floor(original_amount/amount)
+        for i in range(original_amount):
+            if i%intervals == 0:
+                result.append(original_file_paths[i])
+        self.set_file_paths(result)
+
 
 def main():
 
     ds = DataSelector(DATADIRS)
-    ds.query_file_path(NAME_QUERY, NAME_INDEX)
-    ds.query_string(STRING_QUERY)
+    ds.select_random(10)
 
     for file_path in ds.get_file_paths():
         copyfile(file_path, OUTPUTFILE+os.path.basename(file_path))
