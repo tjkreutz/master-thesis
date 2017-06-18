@@ -43,3 +43,20 @@ def select_and_convert_rawdata(datadir, outdir):
     dtxt = DataTransformerXMLToText(xds.get_file_paths(), outdir)
     dtxt.transform_and_output()
 
+
+def main():
+    # an example setup. Converts xml files and extracts labels to labelfile
+    datadir = os.path.abspath('data/xml')
+    outdir = os.path.abspath('data/txt')
+    select_and_convert_rawdata(datadir, outdir)
+
+    labelfile = os.path.abspath('data/labelfile.csv')
+    outfile = open(labelfile, 'w')
+    dr = DataReader(outdir)
+    dr.set_file_paths(dr.find_file_paths())
+    extract_labels(dr, outfile)
+
+
+if __name__ == '__main__':
+    main()
+
