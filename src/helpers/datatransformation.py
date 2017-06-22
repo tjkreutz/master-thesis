@@ -1,6 +1,6 @@
 import os
 from shutil import copyfile
-from .dataselection import XMLDataReader
+from dataselection import XMLDataReader
 
 
 class DataTransformer:

@@ -1,10 +1,12 @@
-from .dataselection import *
-from .datatransformation import *
+import os
+import sys
+from dataselection import *
+from datatransformation import *
 from collections import defaultdict
 from nltk.tokenize import RegexpTokenizer
 
 
-def extract_labels(dr, outfile):
+def extract_labels(dr):
     labeldict = defaultdict(set)
     tokenizer = RegexpTokenizer(r'\w+')
     for fname in dr.get_file_paths():
@@ -23,13 +25,7 @@ def extract_labels(dr, outfile):
                     if token[:-1].isdigit():
                         labeldict[fname].add(int(token[:-1]))
                         continue
-
-    for key, item in labeldict.items():
-        validlabels = [str(v) for v in item if 91 < v < 424]
-        if validlabels:
-            filename = os.path.basename(key)
-            string = filename + '\t' + ','.join(str(v) for v in item if v > 91) + '\n'
-            outfile.write(string)
+    return labeldict
 
 
 def select_and_convert_rawdata(datadir, outdir):
@@ -44,9 +40,17 @@ def select_and_convert_rawdata(datadir, outdir):
     dtxt.transform_and_output()
 
 
-def main():
+def write_labelfile(labeldict, outfile):
+    for key, item in labeldict.items():
+        filename = os.path.basename(key)
+        string = filename + '\t' + ','.join(str(v) for v in item if v > 91) + '\n'
+        outfile.write(string)
+    outfile.close()
+
+
+def main(datadir):
     # an example setup. Converts xml files and extracts labels to labelfile
-    datadir = os.path.abspath('data/xml')
+    datadir = os.path.abspath(datadir)
     outdir = os.path.abspath('data/txt')
     select_and_convert_rawdata(datadir, outdir)
 
@@ -54,9 +58,27 @@ def main():
     outfile = open(labelfile, 'w')
     dr = DataReader(outdir)
     dr.set_file_paths(dr.find_file_paths())
-    extract_labels(dr, outfile)
+    labeldict = extract_labels(dr)
+
+    countlabels = defaultdict(int)
+    # first remove wrong numbers
+    for key, item in labeldict.items():
+        validlabels = [v for v in item if 91 < v < 424]
+        if not validlabels:
+            del labeldict[key]
+        for label in validlabels:
+            countlabels[label] += 1
+
+    # second remove uncommon numbers
+    for key, item in labeldict.items():
+        validlabels = [v for v in item if countlabels[v] > 19]
+        if not validlabels:
+            del labeldict[key]
+
+    write_labelfile(labeldict, outfile)
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) == 2:
+        main(sys.argv[1])
 
