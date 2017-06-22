@@ -61,21 +61,23 @@ def main(datadir):
     labeldict = extract_labels(dr)
 
     countlabels = defaultdict(int)
+    validdict1 = {}
     # first remove wrong numbers
     for key, item in labeldict.items():
         validlabels = [v for v in item if 91 < v < 424]
-        if not validlabels:
-            del labeldict[key]
+        if validlabels:
+            validdict1[key] = validlabels
         for label in validlabels:
             countlabels[label] += 1
 
+    validdict2 = {}
     # second remove uncommon numbers
     for key, item in labeldict.items():
         validlabels = [v for v in item if countlabels[v] > 19]
-        if not validlabels:
-            del labeldict[key]
+        if validlabels:
+            validdict2[key] = validlabels
 
-    write_labelfile(labeldict, outfile)
+    write_labelfile(validdict2, outfile)
 
 
 if __name__ == '__main__':
