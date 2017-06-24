@@ -6,6 +6,16 @@ from collections import defaultdict
 from nltk.tokenize import RegexpTokenizer
 
 
+def remove_unlabelled_files(labeldict, datadir):
+    dr = DataReader(datadir)
+    dr.set_file_paths(dr.find_file_paths())
+
+    for file_path in dr.get_file_paths():
+        abs_file_path = os.path.abspath(file_path)
+        if not abs_file_path in labeldict:
+            os.remove(file_path)
+
+
 def extract_labels(dr):
     labeldict = defaultdict(set)
     tokenizer = RegexpTokenizer(r'\w+')
@@ -36,8 +46,8 @@ def select_and_convert_rawdata(datadir, outdir):
     xds.query_string('http://psi.rechtspraak.nl/rechtsgebied#strafRecht') #zorg dat het strafrecht is
     xds.query_string('http://psi.rechtspraak.nl/procedure#eersteAanleg') #zorg dat het eerste aanleg is
 
-    dtxt = DataTransformerXMLToText(xds.get_file_paths(), outdir)
-    dtxt.transform_and_output()
+    dtxtt = DataTransformerXMLToText(xds.get_file_paths(), outdir)
+    dtxtt.transform_and_output()
 
 
 def write_labelfile(labeldict, outfile):
@@ -77,6 +87,7 @@ def main(datadir):
         if validlabels:
             validdict2[key] = validlabels
 
+    remove_unlabelled_files(validdict2, outdir)
     write_labelfile(validdict2, outfile)
 
 
