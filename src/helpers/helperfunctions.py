@@ -6,6 +6,25 @@ from collections import defaultdict
 from nltk.tokenize import RegexpTokenizer
 
 
+def evaluate_from_dict(dict1, dict2):
+    tp = 0
+    fp = 0
+    fn = 0
+    for key, item in dict1.items():
+        for i in item:
+            if i in dict2[key]:
+                dict2[key].remove(i)
+                tp += 1
+                continue
+            fp += 1
+        fn += len(dict2[key])
+
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    f1score = 2 * ((precision * recall) / (precision + recall))
+    return precision, recall, f1score
+
+
 def remove_unlabelled_files(labeldict, datadir):
     dr = DataReader(datadir)
     dr.set_file_paths(dr.find_file_paths())
@@ -48,6 +67,16 @@ def select_and_convert_rawdata(datadir, outdir):
 
     dtxtt = DataTransformerXMLToText(xds.get_file_paths(), outdir)
     dtxtt.transform_and_output()
+
+
+def read_labelfile(labelfile):
+    labeldict = {}
+    for line in open(labelfile, 'r', encoding='utf-8').readlines():
+        splitted = line.split('\t')
+        key = splitted[0]
+        item = splitted[1].rstrip().split(',')
+        labeldict[key] = item
+    return labeldict
 
 
 def write_labelfile(labeldict, outfile):
