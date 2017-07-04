@@ -1,7 +1,7 @@
 import os
 import sys
-from dataselection import *
-from datatransformation import *
+from .dataselection import *
+from .datatransformation import *
 from collections import defaultdict
 from nltk.tokenize import RegexpTokenizer
 
@@ -71,7 +71,7 @@ def select_and_convert_rawdata(datadir, outdir):
 
 def read_labelfile(labelfile):
     labeldict = {}
-    for line in open(labelfile, 'r', encoding='utf-8').readlines():
+    for line in labelfile.readlines():
         splitted = line.split('\t')
         key = splitted[0]
         item = splitted[1].rstrip().split(',')
