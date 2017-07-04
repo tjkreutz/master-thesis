@@ -1,5 +1,6 @@
 import os
 import math
+from random import shuffle
 from xml.etree import ElementTree
 
 
@@ -66,15 +67,12 @@ class DataSelector(DataReader):
         self.set_file_paths(result)
 
     def select_random(self, amount):
-        result = []
         original_file_paths = self.get_file_paths()
         original_amount = len(original_file_paths)
         if amount > original_amount:
             return
-        intervals = math.floor(original_amount % amount)
-        for i in range(original_amount):
-            if i % intervals == 0:
-                result.append(original_file_paths[i])
+        shuffle(original_file_paths)
+        result = original_file_paths[:amount]
         self.set_file_paths(result)
 
 
