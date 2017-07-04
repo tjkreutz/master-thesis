@@ -7,15 +7,9 @@ from nltk.tokenize import RegexpTokenizer
 
 
 def evaluate_from_dict(dict1, dict2):
-    tp, fp, tn, fn = 0, 0, 0, 0
-    all_labels = set()
+    tp, fp, fn = 0, 0, 0
 
     for key, item in dict1.items():
-        for i in item:
-            all_labels.add(i)
-
-    for key, item in dict1.items():
-        tn += len(all_labels) - len(set(item + dict2[key]))
         for i in item:
             if i in dict2[key]:
                 dict2[key].remove(i)
@@ -27,7 +21,7 @@ def evaluate_from_dict(dict1, dict2):
     precision = tp / (tp + fp)
     recall = tp / (tp + fn)
     f1score = 2 * ((precision * recall) / (precision + recall))
-    accuracy = (tp + tn) / (tp + tn + fp + fn)
+    accuracy = tp / (tp + fp + fn)
     return precision, recall, f1score, accuracy
 
 

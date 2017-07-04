@@ -5,6 +5,10 @@ from collections import defaultdict
 from helpers.dataselection import *
 from helpers.helperfunctions import *
 from sklearn.svm import LinearSVC
+from sklearn.dummy import DummyClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.pipeline import FeatureUnion, Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -13,10 +17,10 @@ FOLDS = 2
 
 def get_pipeline_configuration():
 
-    clf = LinearSVC()
+    clf = DecisionTreeClassifier()
     pipeline = Pipeline([
         ('features', FeatureUnion([
-            ('tfidf', TfidfVectorizer(ngram_range=(1, 1), max_df=0.75)),
+            ('tfidf', TfidfVectorizer(ngram_range=(1, 1), max_df=0.9)),
         ])),
         ('classifier', clf)
     ])
