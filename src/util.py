@@ -5,35 +5,6 @@ from collections import defaultdict
 from nltk.tokenize import RegexpTokenizer
 
 
-def evaluate_from_dict(dict1, dict2):
-    tp, fp, fn = 0, 0, 0
-
-    for key, item in dict1.items():
-        for i in item:
-            if i in dict2[key]:
-                dict2[key].remove(i)
-                tp += 1
-            else:
-                fp += 1
-        fn += len(dict2[key])
-
-    precision = tp / (tp + fp)
-    recall = tp / (tp + fn)
-    f1score = 2 * ((precision * recall) / (precision + recall))
-    accuracy = tp / (tp + fp + fn)
-    return precision, recall, f1score, accuracy
-
-
-def remove_unlabelled_files(labeldict, datadir):
-    dr = DataReader(datadir)
-    dr.set_file_paths(dr.find_file_paths())
-
-    for file_path in dr.get_file_paths():
-        abs_file_path = os.path.abspath(file_path)
-        if not abs_file_path in labeldict:
-            os.remove(file_path)
-
-
 def extract_labels(dr):
     labeldict = defaultdict(set)
     tokenizer = RegexpTokenizer(r'\w+')

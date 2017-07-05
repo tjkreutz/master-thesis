@@ -74,6 +74,12 @@ class DataSelector(DataReader):
         result = original_file_paths[:amount]
         self.set_file_paths(result)
 
+    def remove_unlabeled_files(self, label_dict):
+        for file_path in self.get_file_paths():
+            basename = os.path.basename(file_path)
+            if not basename in label_dict:
+                os.remove(file_path)
+
 
 class XMLDataSelector(XMLDataReader, DataSelector):
 
