@@ -1,7 +1,6 @@
 import os
-import sys
-from .dataselection import *
-from .datatransformation import *
+from helpers.dataselection import DataReader, XMLDataSelector
+from helpers.datatransformation import DataNormalizer, DataTransformerXMLToText
 from collections import defaultdict
 from nltk.tokenize import RegexpTokenizer
 
@@ -85,42 +84,4 @@ def write_labelfile(labeldict, outfile):
         string = filename + '\t' + ','.join(str(v) for v in item if v > 91) + '\n'
         outfile.write(string)
     outfile.close()
-
-
-def main(datadir):
-    # an example setup. Converts xml files and extracts labels to labelfile
-    datadir = os.path.abspath(datadir)
-    outdir = os.path.abspath('data/txt')
-    select_and_convert_rawdata(datadir, outdir)
-
-    labelfile = os.path.abspath('data/labelfile.csv')
-    outfile = open(labelfile, 'w')
-    dr = DataReader(outdir)
-    dr.set_file_paths(dr.find_file_paths())
-    labeldict = extract_labels(dr)
-
-    countlabels = defaultdict(int)
-    validdict1 = {}
-    # first remove wrong numbers
-    for key, item in labeldict.items():
-        validlabels = [v for v in item if 91 < v < 424]
-        if validlabels:
-            validdict1[key] = validlabels
-        for label in validlabels:
-            countlabels[label] += 1
-
-    validdict2 = {}
-    # second remove uncommon numbers
-    for key, item in labeldict.items():
-        validlabels = [v for v in item if countlabels[v] > 19]
-        if validlabels:
-            validdict2[key] = validlabels
-
-    remove_unlabelled_files(validdict2, outdir)
-    write_labelfile(validdict2, outfile)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        main(sys.argv[1])
 

@@ -1,5 +1,4 @@
 import os
-import math
 from random import shuffle
 from xml.etree import ElementTree
 

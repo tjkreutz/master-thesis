@@ -1,6 +1,15 @@
 import os
 from shutil import copyfile
 from .dataselection import XMLDataReader
+from nltk.tokenize import word_tokenize
+
+
+def is_number(x):
+    try:
+        float(x)
+        return True
+    except ValueError:
+        return False
 
 
 class DataTransformer:
@@ -25,6 +34,34 @@ class DataTransformer:
 
     def get_file_paths(self):
         return self.file_paths
+
+
+class DataNormalizer(DataTransformer):
+
+    def transform_and_output(self):
+
+        months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni',
+                  'juli', 'augustus', 'september', 'oktober', 'november', 'december']
+
+        if not os.path.exists(self.outdir):
+            os.makedirs(self.outdir)
+
+        for path in self.get_file_paths():
+            infile = open(path, 'r', encoding='utf-8')
+            destination = os.path.join(self.outdir, os.path.basename(path))
+            outfile = open(destination, 'w', encoding="utf8")
+            for line in infile.readlines():
+                line = word_tokenize(line)
+                newline = []
+                for word in line:
+                    if is_number(word) \
+                            or word in months \
+                            or (len(word) > 2 and is_number(word[:-1])) \
+                            or (len(word) > 3 and is_number(word[:-2])):
+                        continue
+                    newline.append(word)
+                outfile.write(' '.join(newline) + '\n')
+            outfile.close()
 
 
 class DataTransformerXMLToText(DataTransformer):
