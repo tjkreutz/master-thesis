@@ -6,7 +6,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import FeatureUnion, Pipeline
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 def get_pipeline_configuration():
@@ -14,7 +14,7 @@ def get_pipeline_configuration():
     clf = OneVsRestClassifier(DecisionTreeClassifier())
     pipeline = Pipeline([
         ('features', FeatureUnion([
-            ('tfidf', TfidfVectorizer(ngram_range=(1, 1), max_df=0.9)),
+            ('tfidf', CountVectorizer(ngram_range=(1, 1), max_df=0.9)),
         ])),
         ('classifier', clf)
     ])
@@ -40,7 +40,7 @@ def main(datadir):
     labels = MultiLabelBinarizer().fit_transform(labels)
 
     pipeline = get_pipeline_configuration()
-    scores = cross_val_score(pipeline, files, labels, cv=2, scoring='f1_weighted')
+    scores = cross_val_score(pipeline, files, labels, cv=2, scoring='f1_samples')
     print(scores.mean())
 
 
