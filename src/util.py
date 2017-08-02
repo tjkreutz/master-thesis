@@ -5,6 +5,16 @@ from collections import defaultdict
 from nltk.tokenize import RegexpTokenizer
 
 
+def remove_unlabelled_files(labeldict, datadir):
+    dr = DataReader(datadir)
+    dr.set_file_paths(dr.find_file_paths())
+
+    for file_path in dr.get_file_paths():
+        abs_file_path = os.path.abspath(file_path)
+        if not abs_file_path in labeldict:
+            os.remove(file_path)
+
+
 def extract_labels(dr):
     labeldict = defaultdict(set)
     tokenizer = RegexpTokenizer(r'\w+')
