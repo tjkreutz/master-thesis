@@ -1,6 +1,7 @@
 import sys
 import os
 from util import read_labelfile
+from features import *
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeClassifier
@@ -14,7 +15,11 @@ def get_pipeline_configuration():
     clf = OneVsRestClassifier(DecisionTreeClassifier())
     pipeline = Pipeline([
         ('features', FeatureUnion([
-            ('tfidf', CountVectorizer(ngram_range=(1, 1), max_df=0.9)),
+            ('countvectorizer', CountVectorizer(ngram_range=(1, 1), max_df=0.9)),
+            ('documentlength', DocumentLength()),
+            ('typetokenratio', TypeTokenRatio()),
+            ('numberofparagraphs', NumberOfParagraphs()),
+            ('rechtbank', Rechtbank()),
         ])),
         ('classifier', clf)
     ])
