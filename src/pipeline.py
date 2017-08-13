@@ -97,10 +97,12 @@ def main(datadir):
     clf.fit(training_features, training_labels)
 
     pred = clf.predict(testing_features)
-    print(f1_score(testing_labels, pred))
+    print('Precision:\t{0}\nRecall:\t{1}\nF1:\t{2}'.format(
+        precision_score(testing_labels, pred),
+        recall_score(testing_labels, pred),
+        f1_score(testing_labels, pred)))
 
     show_plot(clf, training_features, training_labels, testing_features, testing_labels)
-
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
