@@ -15,6 +15,9 @@ def get_pipeline_configuration():
     clf = OneVsRestClassifier(DecisionTreeClassifier())
     pipeline = Pipeline([
         ('features', FeatureUnion([
+            ('countadjectives', CountAdjectives()),
+            ('taggedwords', TaggedWords()),
+            ('skipgrams', SkipgramVectorizer(n=2, k=2, min_df=0.1, max_df=0.9)),
             ('countvectorizer', CountVectorizer(ngram_range=(1, 1), max_df=0.9)),
             ('documentlength', DocumentLength()),
             ('typetokenratio', TypeTokenRatio()),
