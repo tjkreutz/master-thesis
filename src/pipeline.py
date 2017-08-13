@@ -97,10 +97,9 @@ def main(datadir):
     clf.fit(training_features, training_labels)
 
     pred = clf.predict(testing_features)
+    print(f1_score(testing_labels, pred))
 
     show_plot(clf, training_features, training_labels, testing_features, testing_labels)
-
-    print(f1_score(testing_labels, pred))
 
 
 if __name__ == '__main__':
