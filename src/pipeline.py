@@ -12,17 +12,17 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def get_pipeline_configuration():
 
-    clf = OneVsRestClassifier(DecisionTreeClassifier())
+    clf = DecisionTreeClassifier()
     pipeline = Pipeline([
         ('features', FeatureUnion([
-            ('countadjectives', CountAdjectives()),
-            ('taggedwords', TaggedWords()),
-            ('skipgrams', SkipgramVectorizer(n=2, k=2, min_df=0.1, max_df=0.9)),
+#            ('countadjectives', CountAdjectives()),
+#            ('taggedwords', TaggedWords()),
+#            ('skipgrams', SkipgramVectorizer(n=3, k=2, max_df=0.9)),
             ('countvectorizer', CountVectorizer(ngram_range=(1, 1), max_df=0.9)),
-            ('documentlength', DocumentLength()),
-            ('typetokenratio', TypeTokenRatio()),
-            ('numberofparagraphs', NumberOfParagraphs()),
-            ('rechtbank', Rechtbank()),
+#            ('documentlength', DocumentLength()),
+#            ('typetokenratio', TypeTokenRatio()),
+#            ('numberofparagraphs', NumberOfParagraphs()),
+#            ('rechtbank', Rechtbank()),
         ])),
         ('classifier', clf)
     ])
@@ -46,9 +46,12 @@ def main(datadir):
         labels.append(labelset)
 
     labels = MultiLabelBinarizer().fit_transform(labels)
+    newlabels = [0] * len(labels)
+    for l in range(len(labels)):
+        newlabels[l] = labels[l][3]
 
     pipeline = get_pipeline_configuration()
-    scores = cross_val_score(pipeline, files, labels, cv=2, scoring='f1_samples')
+    scores = cross_val_score(pipeline, files, newlabels, cv=2, scoring='f1_weighted')
     print(scores.mean())
 
 
