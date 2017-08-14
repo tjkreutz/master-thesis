@@ -6,7 +6,7 @@ from util import read_labelfile
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import cross_val_score
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.pipeline import FeatureUnion, Pipeline
@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def get_pipeline_configuration():
 
-    clf = OneVsRestClassifier(DecisionTreeClassifier())
+    clf = OneVsRestClassifier(AdaBoostClassifier())
     pipeline = Pipeline([
         ('features', FeatureUnion([
 #            ('countadjectives', CountAdjectives()),
@@ -93,9 +93,9 @@ def main(datadir):
     pred = pipeline.predict(testing_files)
 
     print('Precision:\t{0}\nRecall:\t{1}\nF1:\t{2}'.format(
-        precision_score(testing_labels, pred, average='weighted'),
-        recall_score(testing_labels, pred, average='weighted'),
-        f1_score(testing_labels, pred, average='weighted')))
+        precision_score(testing_labels, pred, average='macro'),
+        recall_score(testing_labels, pred, average='macro'),
+        f1_score(testing_labels, pred, average='macro')))
 
 #    show_plot(clf, vec, training_features, training_labels, testing_features, testing_labels)
 
