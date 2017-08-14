@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def get_pipeline_configuration():
 
-    clf = DecisionTreeClassifier()
+    clf = OneVsRestClassifier(DecisionTreeClassifier())
     pipeline = Pipeline([
         ('features', FeatureUnion([
 #            ('countadjectives', CountAdjectives()),
@@ -82,31 +82,22 @@ def main(datadir):
         files.append(open(os.path.join(datadir, filename), 'r', encoding='utf-8').read())
         labels.append(labelset)
 
-    mlb = MultiLabelBinarizer()
-    labels = mlb.fit_transform(labels)
-#    print(mlb.classes_)
-    newlabels = [0] * len(labels)
-    for l in range(len(labels)):
-        newlabels[l] = labels[l][3]
+    labels = MultiLabelBinarizer().fit_transform(labels)
 
-    vec = CountVectorizer(ngram_range=(1, 1), max_df=0.9)
-    clf = DecisionTreeClassifier()
-
+    pipeline = get_pipeline_configuration()
     split = round(0.75*len(files))
     training_files, testing_files = files[:split], files[split:]
-    training_labels, testing_labels = newlabels[:split], newlabels[split:]
+    training_labels, testing_labels = labels[:split], labels[split:]
 
-    training_features = vec.fit_transform(training_files)
-    testing_features = vec.transform(testing_files)
-    clf.fit(training_features, training_labels)
+    pipeline.fit(training_files, training_labels)
+    pred = pipeline.predict(testing_files)
 
-    pred = clf.predict(testing_features)
     print('Precision:\t{0}\nRecall:\t{1}\nF1:\t{2}'.format(
-        precision_score(testing_labels, pred),
-        recall_score(testing_labels, pred),
-        f1_score(testing_labels, pred)))
+        precision_score(testing_labels, pred, average='weighted'),
+        recall_score(testing_labels, pred, average='weighted'),
+        f1_score(testing_labels, pred, average='weighted')))
 
-    show_plot(clf, vec, training_features, training_labels, testing_features, testing_labels)
+#    show_plot(clf, vec, training_features, training_labels, testing_features, testing_labels)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
