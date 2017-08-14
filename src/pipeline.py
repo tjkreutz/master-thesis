@@ -33,13 +33,15 @@ def get_pipeline_configuration():
     return pipeline
 
 
-def show_plot(clf, training_features, training_labels, testing_features, testing_labels):
+def show_plot(clf, vec, training_features, training_labels, testing_features, testing_labels):
     # Plotting decision regions
 
     importances = clf.feature_importances_
 
     indices = np.argsort(importances)[::-1]
     used_features = indices[:2]
+    feature_names = vec.get_feature_names()
+    two_feature_names = [feature_names[i] for i in used_features]
 
     two_training_features = training_features[:, used_features].todense()
     two_testing_features = testing_features[:, used_features].todense()
@@ -59,6 +61,8 @@ def show_plot(clf, training_features, training_labels, testing_features, testing
 
     ar.scatter(two_testing_features[:, 0], two_testing_features[:, 1], c=testing_labels, s=20, edgecolor='k')
     ar.contourf(xx, yy, Z, alpha=0.4)
+    ar.set_xlabel(two_feature_names[0])
+    ar.set_ylabel(two_feature_names[1])
 
     plt.show()
 
@@ -102,7 +106,7 @@ def main(datadir):
         recall_score(testing_labels, pred),
         f1_score(testing_labels, pred)))
 
-    show_plot(clf, training_features, training_labels, testing_features, testing_labels)
+    show_plot(clf, vec, training_features, training_labels, testing_features, testing_labels)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
