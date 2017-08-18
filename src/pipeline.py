@@ -3,7 +3,7 @@ import os
 from features import *
 from util import read_labelfile
 from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.pipeline import FeatureUnion, Pipeline
@@ -12,13 +12,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def get_pipeline_configuration():
 
-    clf = OneVsRestClassifier(AdaBoostClassifier())
+    clf = OneVsRestClassifier(DecisionTreeClassifier())
     pipeline = Pipeline([
         ('features', FeatureUnion([
 #            ('countadjectives', CountAdjectives()),
 #            ('taggedwords', TaggedWords()),
 #            ('skipgrams', SkipgramVectorizer(n=3, k=2, max_df=0.9)),
-            ('countvectorizer', CountVectorizer(ngram_range=(1, 1), max_df=0.9)),
+            ('countvectorizer', CountVectorizer(ngram_range=(1, 3), max_df=0.4, input='filename')),
 #            ('documentlength', DocumentLength()),
 #            ('typetokenratio', TypeTokenRatio()),
 #            ('numberofparagraphs', NumberOfParagraphs()),
@@ -42,7 +42,7 @@ def main(datadir):
     labels = []
 
     for filename, labelset in label_dict.items():
-        files.append(open(os.path.join(datadir, filename), 'r', encoding='utf-8').read())
+        files.append(os.path.join(datadir, filename))
         labels.append(labelset)
 
     labels = MultiLabelBinarizer().fit_transform(labels)
