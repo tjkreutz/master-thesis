@@ -2,7 +2,7 @@ from nltk.corpus import alpino
 from nltk.util import skipgrams
 from nltk.tag import PerceptronTagger
 from sklearn.base import TransformerMixin
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 class CountAdjectives(TransformerMixin):
@@ -35,7 +35,7 @@ class CountAdjectives(TransformerMixin):
         return self
 
 
-class SkipgramVectorizer(TfidfVectorizer):
+class SkipgramVectorizer(CountVectorizer):
     """ Learns weights for skipgrams """
 
     def __init__(self, n=2, k=2, **kwargs):
@@ -56,8 +56,8 @@ class TaggedWords(TransformerMixin):
     def tagged_words(self, x):
         record = False
         tokens = x.split()
-        vec = [0, 0, 0, 0, 0, 0, 0, 0]
         tag_words = ['verdachte', 'nummer', 'naam', 'bedrijf', 'adres', 'slachtoffer', 'aangever', 'kenteken']
+        vec = [0] * len(tag_words)
         for token in tokens:
             if record == True:
                 token = token.strip().lower()

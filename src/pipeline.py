@@ -1,9 +1,9 @@
 import sys
 import os
-from util import read_labelfile
+from eval import *
 from features import *
+from util import read_labelfile
 from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.model_selection import cross_val_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.pipeline import FeatureUnion, Pipeline
@@ -17,8 +17,8 @@ def get_pipeline_configuration():
         ('features', FeatureUnion([
             ('countadjectives', CountAdjectives()),
             ('taggedwords', TaggedWords()),
-            ('skipgrams', SkipgramVectorizer(n=2, k=2, min_df=0.1, max_df=0.9)),
-            ('countvectorizer', CountVectorizer(ngram_range=(1, 1), max_df=0.9)),
+            ('skipgrams', SkipgramVectorizer(n=3, k=2, max_df=0.9)),
+            ('countvectorizer', CountVectorizer(ngram_range=(1, 3), max_df=0.4, input='filename')),
             ('documentlength', DocumentLength()),
             ('typetokenratio', TypeTokenRatio()),
             ('numberofparagraphs', NumberOfParagraphs()),
@@ -48,9 +48,8 @@ def main(datadir):
     labels = MultiLabelBinarizer().fit_transform(labels)
 
     pipeline = get_pipeline_configuration()
-    scores = cross_val_score(pipeline, files, labels, cv=2, scoring='f1_samples')
-    print(scores.mean())
-
+    evaluator = NFoldEvaluator(pipeline, files, labels, 2)
+    evaluator.evaluate()
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
