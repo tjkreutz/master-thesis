@@ -17,7 +17,7 @@ def get_pipeline_configuration():
         ('features', FeatureUnion([
             ('countadjectives', CountAdjectives()),
             ('taggedwords', TaggedWords()),
-            ('skipgrams', SkipgramVectorizer(n=3, k=2, max_df=0.9)),
+            ('skipgrams', SkipgramVectorizer(n=2, k=2, max_df=0.9)),
             ('countvectorizer', CountVectorizer(ngram_range=(1, 3), max_df=0.4, input='filename')),
             ('documentlength', DocumentLength()),
             ('typetokenratio', TypeTokenRatio()),
