@@ -48,7 +48,7 @@ def main(datadir):
     labels = MultiLabelBinarizer().fit_transform(labels)
 
     pipeline = get_pipeline_configuration()
-    evaluator = NFoldEvaluator(pipeline, files, labels, 2)
+    evaluator = NFoldEvaluator(pipeline, files, labels, 5)
     evaluator.evaluate()
 
 if __name__ == '__main__':
